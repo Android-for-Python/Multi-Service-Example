@@ -95,6 +95,7 @@ class MultiService(App):
     ###################
     def start_services(self):
         if not self.service:
+            self.active = [False] * self.number_of_services
             for i in range(self.number_of_services):
                 self.start_service(i)
 
@@ -163,9 +164,10 @@ class MultiService(App):
                 id = self.tcpip_ports.index(p)
                 self.tcpip_ports[id] = msg
                 self.clients[id] = OSCClient(b'localhost',int(msg))
-                # reuse the restarted service
+                # if was being used, reuse the restarted service
                 # the lost result is replaced with a new result
-                if self.last_task_number < self.number_of_tasks:
+                if self.active[id] and\
+                   self.last_task_number < self.number_of_tasks:
                     self.start_task(int(id))
                 return
  
@@ -189,6 +191,7 @@ class MultiService(App):
             self.root.ids.label.text += 'No services available\n'
 
     def start_task(self, id):
+        self.active[id] = True
         self.clients[id].send_message(b'/start_task',
                                       [str(id).encode('utf8'),])
 
@@ -196,6 +199,7 @@ class MultiService(App):
         id, res = message.decode('utf8').split(',')
         # service available
         self.num_services_ready +=1
+        self.active[int(id)] = False
         # collect result
         self.result_magnitude += int(res)
         self.num_results += 1
