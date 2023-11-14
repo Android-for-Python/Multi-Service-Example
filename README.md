@@ -2,6 +2,8 @@
 
 *Schedule tasks on multiple services.*
 
+**2023-11-13 This repository is archived.**
+
 Background reading [Android Service](https://github.com/Android-for-Python/Android-for-Python-Users#android-service).
 
 Start the services, start the tasks (repeat?), later stop the services. Perhaps repeat this sequence.
